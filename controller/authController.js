@@ -3,8 +3,7 @@
 const { log } = require('console');
 const User = require('../model/User')
 const jwt = require('jsonwebtoken');
-
- ///    --------------- JWT ------CONFIGURATION---------------
+  ///    --------------- JWT ------CONFIGURATION---------------
 const EXPIRED_TOKEN = 3 * 24 * 60 * 60
 const CreateToken =  (id)=> {
 return jwt.sign({id},'secret information',{
