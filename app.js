@@ -1,13 +1,14 @@
-console.log("hello word");
+console.log("Backend Mobile App");
 
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
+const TokenVerif = require('./Middleware/authorization')
 
 const cookieParser = require('cookie-parser');
 const app = express();
 
-// Use cookie-parser middleware 
+// Use coopkie-parser middleware 
 // middleware
 app.use(express.static('public'));
 app.use(express.json())
@@ -39,7 +40,10 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true ,useCr
 // routes
 
 
-app.get('/api', (req, res) => {res.send("hello ")});
+ app.get('/api', (req, res) => {
+
+    res.send('hello');
+  });
 // app.get('/', (req, res) => res.render('home'));
 // app.get('/smoothies', (req, res) => res.render('smoothies'));
  app.use(authRoutes);
