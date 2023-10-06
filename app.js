@@ -3,7 +3,7 @@ console.log("Backend Mobile App");
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
-const TokenVerif = require('./Middleware/authorization')
+const TokenVerif = require('./Midllware/authorization')
 
 const cookieParser = require('cookie-parser');
 const app = express();

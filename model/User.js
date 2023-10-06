@@ -23,7 +23,16 @@ const userSchema = new mongoose.Schema({
   },
   token: {
      type: String 
-    },
+     },
+  name:{
+    type :String,
+    required: [true , 'Please enter a Name'  ],
+  },
+  role:{
+    type :String,
+    enum:['admin','user','guest'],
+    default:'user'
+  }
 
 });
 
