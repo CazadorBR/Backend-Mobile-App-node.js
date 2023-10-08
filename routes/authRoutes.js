@@ -7,25 +7,30 @@
  const router = Router();
 
 
-// -----------Middleware--------------
- const verifyToken  = require('../Midllware/authorization'); // Importez la fonction requireAuth comme middleware
- const getCurrnetUser  = require('../Midllware/authorization'); // Importez la fonction requireAuth comme middleware
- const verifyRole  = require('../Midllware/authorization'); // Importez la fonction requireAuth comme middleware
+// ------------Middleware--------------
+  const verifyToken  = require('../Midllware/Authmiddleware');  
+ const verifyRole  = require('../Midllware/IsAdmin');  
 
+
+ //-----------ARIABLES-------------------
  const secretKey = process.env.SECRET_KEY;
  const EXPIRED_TOKEN = 3 * 24 * 60 * 60
+
+ //-----------Pricipal Routes------------
   router.post('/signupA', authController.signup_Amdin);
   router.post('/signupU', authController.signup_User);
   router.post('/SignIn', authController.SignIn);
+  router.get('/logout', authController.logout);
 
-  router.get('/midllewarAuth', verifyToken,authController.Verify);  
-  router.get('/midllewareRole' ,verifyRole, authController.verifyRole);
-  // router.get('/test', verifyToken,authController.test);  
+ 
+
+  // --------- Testting Routes-------------
+  router.get('/authMid',verifyToken, authController.test);
+  router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 
+ // router.get('/test', verifyToken,authController.test);  
 
 
-  router.get('/test', verifyToken, (req, res) => {
-    res.status(200).json("vous étes connecté");
-}); 
+ 
 module.exports = router;
 
 

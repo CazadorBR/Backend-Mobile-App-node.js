@@ -3,9 +3,7 @@ console.log("Backend Mobile App");
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
-const TokenVerif = require('./Midllware/authorization')
-
-const cookieParser = require('cookie-parser');
+ const cookieParser = require('cookie-parser');
 const app = express();
 
 // Use coopkie-parser middleware 
@@ -23,7 +21,6 @@ app.set('view engine', 'ejs');
 
 
 const port = 3000;
-
 // Connexion à la base de données MongoDB
 const dbURI = 'mongodb+srv://fedibr:fedibr28@cluster0.38xgvkm.mongodb.net/mongodb';
 

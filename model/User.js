@@ -2,11 +2,8 @@ const { log } = require('console');
 const mongoose = require('mongoose');
 const  {isEmail} = require('validator') 
 const bcrypt = require('bcrypt')
-const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
-const EXPIRED_TOKEN = 3 * 24 * 60 * 60
-const secretKey = process.env.SECRET_KEY;
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -69,3 +66,4 @@ userSchema.statics.login = async function(email, password) {
 
 const User = mongoose.model('user', userSchema);
 module.exports = User;
+ 
