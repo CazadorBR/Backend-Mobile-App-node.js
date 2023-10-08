@@ -29,8 +29,10 @@ const userSchema = new mongoose.Schema({
     type :String,
     enum:['admin','user','guest'],
     default:'user'
+  },
+  verified:{
+    type:Boolean
   }
-
 });
 
 // MONGOOS HOOK

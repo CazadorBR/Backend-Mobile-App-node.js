@@ -1,13 +1,57 @@
 // controller actions
 
-const { log } = require('console');
+const { log, error } = require('console');
 const User = require('../model/User')
+const UserVerification = require('../model/UserVerification')
 const BlackList = require('../model/BlackList')
+
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const bcrypt = require('bcrypt')
   
+// user verification CONFIG
+//email handler
+const nodemailer = require("nodemailer")
+ 
+// unique string 
+const {h4:uuidv4} = require("uuid")
+require('dotenv').config()
+// variables .env
+const email = process.env.AUTH_EMAIL;
+const pwd = process.env.AUTH_PASSWORD;
+const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
+// etape 1 install  nodemailer + uuid + injection des dependances 
+// create a node mailer tranporter
+
+
+
+// --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
+
+var transporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "f1ba4cc13c5aed",
+    pass: "0246564e53d3c2"
+  }
+});
+
+// Email options
+const mailOptions = {
+  from: email,
+  to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
+  subject: 'Sending Email using Node.js',
+  text: 'That was easy!',
+}
+ 
+transporter.sendMail(mailOptions, function (error, info) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
  ///    --------------- JWT ------CONFIGURATION---------------
   const secretKey = process.env.SECRET_KEY;
 //   console.log(secretKey);
@@ -17,8 +61,15 @@ const bcrypt = require('bcrypt')
 return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
 }
 
- 
-//-----------------------------------------------------------
+ // tranporter.verify((error,succes)=>{
+//   if(error){
+//   console.log("erreur de connection "+error);
+//   }else{
+//     console.log("Ready to send mails");
+//     console.log(succes);
+//   }
+// })
+//--------------------------------------------SIGN UP ADMIN-----------------------------------------------------------
 
 // module.exports.signup_get = (req, res) => {
 //     res.render('signup');
@@ -43,7 +94,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
             res.status(400).send("Bad request so Admin not created")
     }
   }
-  //---------------------USER SIGN UP--------------------------------------
+  //---------------------------------------------------USER SIGN UP -------------------------------------------------
 
   module.exports.signup_User = async (req, res) => {
     const { email, password ,name} = req.body;
