@@ -4,20 +4,17 @@ const { log, error } = require('console');
 const User = require('../model/User')
 const UserVerification = require('../model/UserVerification')
 const BlackList = require('../model/BlackList')
-
-
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const path = require('path')
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
   
 // user verification CONFIG
 //email handler
 const nodemailer = require("nodemailer")
- 
 // unique string 
 const {h4:uuidv4} = require("uuid")
-require('dotenv').config()
-// variables .env
+ // variables .env
 const email = process.env.AUTH_EMAIL;
 const pwd = process.env.AUTH_PASSWORD;
 const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
@@ -27,7 +24,7 @@ const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
 
 
 // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
-
+// ----------A  ne pas modfidier!!!!!!!!--------------------
 var transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
@@ -36,7 +33,7 @@ var transporter = nodemailer.createTransport({
     pass: "0246564e53d3c2"
   }
 });
-
+// ------------------------------------------------------------
 // Email options
 const mailOptions = {
   from: email,
@@ -44,14 +41,23 @@ const mailOptions = {
   subject: 'Sending Email using Node.js',
   text: 'That was easy!',
 }
- 
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
+
+// TEST  MAILLING
+ transporter.verify((error,succes)=>{
+  if(error){
     console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
+  }else {
+    console.log("Ready to send Mails");
+    console.log(succes);
   }
-});
+})
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
  ///    --------------- JWT ------CONFIGURATION---------------
   const secretKey = process.env.SECRET_KEY;
 //   console.log(secretKey);
@@ -69,14 +75,23 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
 //     console.log(succes);
 //   }
 // })
-//--------------------------------------------SIGN UP ADMIN-----------------------------------------------------------
-
-// module.exports.signup_get = (req, res) => {
-//     res.render('signup');
-//   }
+//--------------------------------------------SEND VERIFICATION EMAIL-----------------------------------------------------------
   
- 
-  // ------------------  SIGN -- UP -- USER -----------
+  module.exports.verificationMail = (req,res) =>{
+        let{userId,uniquestring} = req.params;
+        UserVerification
+            .find({userId})
+            .then()
+            .catch((error)=>{
+              console.log(error);
+              let message = "An error was occured while  checking  for existing User verification  record !! "
+       })
+
+  }
+  module.exports.FileVerification = (req,res)=>{
+          
+  }
+  // ---------------------------------------------  SIGN UP ADMIN --------------------------------------------------
   module.exports.signup_Amdin = async (req, res) => {
     const { email, password ,name} = req.body;
 

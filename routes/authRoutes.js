@@ -22,11 +22,12 @@
   router.post('/SignIn', authController.SignIn);
   router.get('/logout', authController.logout);
 
- 
-
+  router.get('verify/:userId/:uniquestring',authController.verificationMail)
+router.get('verified',authController.FileVerification)
   // --------- Testting Routes-------------
   router.get('/authMid',verifyToken, authController.test);
   router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 
+
  // router.get('/test', verifyToken,authController.test);  
 
 

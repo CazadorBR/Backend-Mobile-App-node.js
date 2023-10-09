@@ -11,5 +11,5 @@ const userverificationSchema = new mongoose.Schema({
     
   });
   const userverification = mongoose.model('userverification', userverificationSchema);
-module.exports = userverification;
+  module.exports = userverification;
  
