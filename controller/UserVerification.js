@@ -10,7 +10,7 @@
  const email_S = process.env.AUTH_EMAIL;
   // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
 const  sendVerificationEmail = ({_id,email},res) => {
-const  CURRENT_URL = "http://127.0.01:3000";
+const  CURRENT_URL = "http://localhost:3000";
 const  UNIQUE_STRING = uuidv4()+_id;
 
  // mail options

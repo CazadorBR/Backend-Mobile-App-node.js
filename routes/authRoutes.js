@@ -22,8 +22,9 @@
   router.post('/SignIn', authController.SignIn);
   router.get('/logout', authController.logout);
 
-  router.get('verify/:userId/:uniquestring',authController.verificationMail)
-router.get('verified',authController.FileVerification)
+  router.get('/verify/:userId',authController.verificationMail)
+  // ${CURRENT_URL+"/verify/"+_id+"/"+UNIQUE_STRING}
+ router.get('/verified',authController.FileVerification)
   // --------- Testting Routes-------------
   router.get('/authMid',verifyToken, authController.test);
   router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 

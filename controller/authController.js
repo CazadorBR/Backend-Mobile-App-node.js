@@ -1,26 +1,29 @@
 // controller actions
 
 const { log, error } = require('console');
+// require Entity
 const User = require('../model/User')
 const UserVerification = require('../model/UserVerification')
-const BlackList = require('../model/BlackList')
+ const BlackList = require('../model/BlackList')
+// Congiuration
 require('dotenv').config();
 const path = require('path')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
-  
-// user verification CONFIG
+ // user verification CONFIG
 //email handler
 const nodemailer = require("nodemailer")
 // unique string 
-const {h4:uuidv4} = require("uuid")
+const {v4:uuidv4} = require("uuid");
  // variables .env
 const email = process.env.AUTH_EMAIL;
 const pwd = process.env.AUTH_PASSWORD;
 const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
 // etape 1 install  nodemailer + uuid + injection des dependances 
 // create a node mailer tranporter
-
+ // unique string 
+  // variables .env
+const email_S = process.env.AUTH_EMAIL;
 
 
 // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
@@ -78,31 +81,130 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
 //--------------------------------------------SEND VERIFICATION EMAIL-----------------------------------------------------------
   
   module.exports.verificationMail = (req,res) =>{
-        let{userId,uniquestring} = req.params;
+        let{userId} = req.params;
+         
         UserVerification
-            .find({userId})
-            .then()
+            .find({UserID:userId})
+            .then(()=>{
+              // if(result.length > 0){
+              //   console.log(result.length);
+                // const {expiresAt} = result[0]
+                // const hashedUniqueString = result[0].uniqueString
+              //  if(expiresAt < Date.now()){
+              //   console.log(UserVerification);
+              //   UserVerification.deleteOne({userId})
+              //                   .then(result =>{
+              //                         User.deleteOne({_id:userId})
+              //                         .then(()=>{
+              //                           let message = "Link has expired Please sign up again ";
+              //                           res.redirect(`/verified/error=true&message=${message}`)
+              //                         })
+              //                         .catch((error)=>{
+              //                           console.log(error);
+              //                           let message = "An error was occured while expired unique string failed ";
+              //                           res.redirect(`/verified/error=true&message=${message}`)
+              //                         })
+              //                       })
+              //                   .catch((error)=>{
+              //                     console.log(error);
+              //                     let message = "An-error-was-occured-while-clearing-expired-user ";
+              //                     res.redirect(`/verified/error=true&message=${message}`)
+                  
+              //                   })
+              //   }
+              //   // result doesn't expired 
+              //   else{
+                  console.log("----------------------------------");
+                  // valis record exist// compare the hashed inque string  
+                //  bcrypt.compare(uniqueString,hashedUniqueString)
+                      // .then(result =>{
+                        //  if(result){
+                           User.updateOne({ _id: userId},{verified : true})
+                              .then(()=>{
+                                UserVerification.deleteOne({userId})
+                                                .then(()=>{
+                                                //  res.redirect('/verified')
+                                                res.sendFile(path.join(__dirname,"../View/verified.html"))
+                                                 })
+                                                 .catch((error)=>{
+                                                  console.log(error);
+                                                  let message = "An-error-occured-while-finalizing-succeful-verification";
+                                                  res.redirect(`/verified/error=true&message=${message}`)
+                                                 })     
+                               })
+                              .catch(error =>{
+                                    console.log(error);
+                                    let message = "Invalid-verification-details-passed . Check-your-inbox";
+                                    res.redirect(`/verified/error=true&message=${message}`)
+                          })
+
+                        //  }else{
+                        //   let message = "Invalid verification details passed . Check your inbox";
+                        //   res.redirect(`/verified/error=true&message=${message}`)
+                        //  }
+                      })
+                    
+                
+
+
+            //    }
+            //    else{
+            //     let message = "Account-record-doesn't-exist-or-has-been-verified-already. pleasee-sign-uo-or-log-In !! ";
+            //     res.redirect(`/verified/error=true&message=${message}`)
+
+            //   }
+            // })
             .catch((error)=>{
               console.log(error);
-              let message = "An error was occured while  checking  for existing User verification  record !! "
+              let message = "An error was occured while  checking  for existing User verification  record !! ";
+              res.redirect(`/verified/error=true&message=${message}`)
+
        })
 
   }
   module.exports.FileVerification = (req,res)=>{
-          
+
+    res.sendFile(path.join(__dirname, "../View/verified.html"));
+
   }
   // ---------------------------------------------  SIGN UP ADMIN --------------------------------------------------
   module.exports.signup_Amdin = async (req, res) => {
     const { email, password ,name} = req.body;
 
     try{
-       const user = await User.create({email,password,name,role:'admin'});
+      //  const user = await User.create({email,password,name,role:'admin',verified:false})
+      //                         .then((result)=>{
+      //                           sendVerificationEmail(result,res)
+      //                         })
+      const newUser = new User({
+        email,
+        password,
+        name,
+        role:"admin",
+        verified:false
+      });
 
-       const token = CreateToken(user._id)
+       newUser.save()
+              .then((result)=>{
+                console.log(result);
+                sendVerificationEmail({ _id: result._id, email: result.email },res)
+                
+              })
+              .catch((err)=>{
+                console.log(err);
+
+                res.json({
+                  status:"Failed",
+                  message :" An error was occured while saving User"
+                })
+              })
+
+
+
+       const token = CreateToken(newUser._id)
        console.log(" user  token : "+ token);
-       user.token = token;
-      //  res.cookie('JWT',token,{hhtpOnly:true,EXPIRED_TOKEN:EXPIRED_TOKEN *1000 });
-       res.status(201).json(user);
+       newUser.token = token;
+       //  res.status(201).json(newUser);
 
     }catch(error){
             console.log(error);
@@ -115,8 +217,9 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
     const { email, password ,name} = req.body;
 
     try{
-       const user = await User.create({email,password,name,role:'user'});
-
+       const user = await User.create({email,password,name,role:'user'})
+      
+        sendVerificationEmail( user._id,email,res)
        const token = CreateToken(user._id)
        console.log(" user  token : "+ token);
        user.token = token;
@@ -137,15 +240,21 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
           res.status(400).send("All input is required");
         }
         const user = await User.findOne({ email });
-    
-        if (user && (await bcrypt.compare(password, user.password))) {
-  
 
-          // PAYLOAD:je place dans le payload du jwt  id_user + Email + Role
-          const token = jwt.sign( { user_id: user._id,role: user.role, email },secretKey,{expiresIn: EXPIRED_TOKEN,} );
-           user.token = token;
-          res.status(200).json(user);
-        }
+        if(!(user.verified)){
+          res.json({
+            status :"Failed",
+            message :"Email hasn't been Verified , Verify your inbox!"
+          })
+       }else{
+           if (user && (await bcrypt.compare(password, user.password))) {
+        // PAYLOAD:je place dans le payload du jwt  id_user + Email + Role
+        const token = jwt.sign( { user_id: user._id,role: user.role, email },secretKey,{expiresIn: EXPIRED_TOKEN,} );
+         user.token = token;
+        res.status(200).json(user);
+      }
+    }
+        
         res.status(400).send("Invalid Credentials");
       } catch (err) {
         console.log(err);
@@ -194,3 +303,69 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
    }
      
     
+// Fontion SEND mail VERIFICATION
+   const  sendVerificationEmail = ({_id,email},res) => {
+    const  CURRENT_URL = "http://localhost:3000/";
+    // const  uniqueString = uuidv4()+_id;
+      
+     // mail options
+        const  Mail_Option = {
+        from: email_S,
+        to: email, // Replace with recipient's email address
+        subject: 'Verify your email',
+        html: `<p> Please Verify your  <b>Email adress</b> to complete the sign up into your account.</p>
+               <p> this link  <b> expires in 6 hours</b>.</p>
+               <p> Press <a href=${CURRENT_URL+"verify/"+_id}>HERE</a>
+                   To proceed.</p>`,
+        };
+    
+         /// to Do ----------------------
+    
+        //  hach the unique string 
+        // const saltRounds = 10
+        // bcrypt.hash(uniqueString,saltRounds)
+        //       .then((hashedUniqueString) => {
+       
+                // creat a instance for userverification CLASS to add attribute
+                    const newverification = UserVerification({
+                      UserID : _id,
+                      // uniqueString: hashedUniqueString, 
+                      createdAt :Date.now(),
+                      expiredAt :Date.now()+21600000  //6 hours     
+                    })
+               // Save uservarification data 
+                    newverification.save()
+                                   .then(()=>{
+                                          transporter
+                                              .sendMail(Mail_Option)
+                                              .then(()=>{
+                                                res.json({
+                                                  status : "Pending",
+                                                  message :"Email verification was sent ! Check it !!"
+                                                })
+                                              })
+                                              .catch((error) =>{
+                                                console.log(error);
+                                                res.json({
+                                                  status: "Failed",
+                                                  message: "Couldn't send mail  verification !!"
+                                                })
+                                    // send email with nodemailer tranporter 
+                                   })
+                                   .catch((error) =>{
+                                    console.log(error);
+                                    res.json({
+                                      status: "Failed",
+                                      message: "Couldn't save  verification Email Data!"
+                                    })
+                                   }) 
+             })
+              // .catch((error) =>{
+              //   console.log(error);
+              //   res.json({
+              //     status: "Failed",
+              //     message: "An error was occured while hashing email data !"
+              //   })
+              //  }) 
+    // } )
+    }
