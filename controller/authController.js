@@ -124,7 +124,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
                                 UserVerification.deleteOne({userId})
                                                 .then(()=>{
                                                 //  res.redirect('/verified')
-                                                res.sendFile(path.join(__dirname,"../View/verified.html"))
+                                                res.sendFile(path.join(__dirname,"../View/verifyYouMail.html"))
                                                  })
                                                  .catch((error)=>{
                                                   console.log(error);
@@ -164,7 +164,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
   }
   module.exports.FileVerification = (req,res)=>{
 
-    res.sendFile(path.join(__dirname, "../View/verified.html"));
+    res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
 
   }
   // ---------------------------------------------  SIGN UP ADMIN --------------------------------------------------
@@ -315,7 +315,10 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
         subject: 'Verify your email',
         html: `<p> Please Verify your  <b>Email adress</b> to complete the sign up into your account.</p>
                <p> this link  <b> expires in 6 hours</b>.</p>
+               <div style="font-family: inherit; text-align: center"><span style="color: #ffbe00; font-size: 18px">
                <p> Press <a href=${CURRENT_URL+"verify/"+_id}>HERE</a>
+               </span></div><div></div></div></td>
+
                    To proceed.</p>`,
         };
     
