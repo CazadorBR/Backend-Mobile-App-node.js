@@ -3,22 +3,18 @@ console.log("Backend Mobile App");
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
- const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
-
-// Use coopkie-parser middleware 
-// middleware
+const morgan = require("morgan")
+app.use(morgan('dev'))
+ 
 app.use(express.static('public'));
 app.use(express.json())
   
 // Use cookie-parser middleware
 app.use(cookieParser());
-
 // view engine
 app.set('view engine', 'ejs');
-
-// database connection
-
 
 const port = 3000;
 // Connexion à la base de données MongoDB
@@ -38,7 +34,6 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true ,useCr
 
 
  app.get('/api', (req, res) => {
-
     res.send('hello');
   });
 // app.get('/', (req, res) => res.render('home'));

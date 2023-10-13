@@ -21,7 +21,6 @@ const verifyToken = (req, res, next) => {
     console.log(decoded);
     req.user = decoded;
     next();
-  
     }
    
   return next();

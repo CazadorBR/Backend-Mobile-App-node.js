@@ -1,15 +1,12 @@
  const { Router } = require('express');
  const authController = require('../controller/authController');
- const User = require('../model/User')
  require('dotenv').config(); // Chargez les variables d'environnement
- const bcrypt = require('bcrypt')
- const jwt = require('jsonwebtoken');
  const router = Router();
 
 
 // ------------Middleware--------------
-  const verifyToken  = require('../Midllware/Authmiddleware');  
- const verifyRole  = require('../Midllware/IsAdmin');  
+ const verifyToken  = require('../Midllware/Authmiddleware');  
+ const  verifyRole  = require('../Midllware/IsAdmin');  
 
 
  //-----------ARIABLES-------------------
@@ -23,8 +20,7 @@
   router.get('/logout', authController.logout);
 
   router.get('/verify/:userId',authController.verificationMail)
-  // ${CURRENT_URL+"/verify/"+_id+"/"+UNIQUE_STRING}
- router.get('/verified',authController.FileVerification)
+  router.get('/verified',authController.FileVerification)
   // --------- Testting Routes-------------
   router.get('/authMid',verifyToken, authController.test);
   router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 

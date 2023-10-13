@@ -1,29 +1,30 @@
-// controller actions
-
+ 
 const { log, error } = require('console');
-// require Entity
+const express = require('express');
+const app = express();
+const morgan = require("morgan")
+app.use(morgan('dev'))
+
+//  ------------------------------------------Require Entity ------------------------------------------
 const User = require('../model/User')
 const UserVerification = require('../model/UserVerification')
- const BlackList = require('../model/BlackList')
-// Congiuration
+const BlackList = require('../model/BlackList')
+// -------------------------------------------Congiuration ------------------------------------------
 require('dotenv').config();
 const path = require('path')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
- // user verification CONFIG
-//email handler
+
+
 const nodemailer = require("nodemailer")
-// unique string 
 const {v4:uuidv4} = require("uuid");
- // variables .env
+ 
+
 const email = process.env.AUTH_EMAIL;
 const pwd = process.env.AUTH_PASSWORD;
 const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
-// etape 1 install  nodemailer + uuid + injection des dependances 
-// create a node mailer tranporter
- // unique string 
-  // variables .env
 const email_S = process.env.AUTH_EMAIL;
+const secretKey = process.env.SECRET_KEY;
 
 
 // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
@@ -62,13 +63,8 @@ const mailOptions = {
 //   }
 // });
  ///    --------------- JWT ------CONFIGURATION---------------
-  const secretKey = process.env.SECRET_KEY;
 //   console.log(secretKey);
   // const secrect_key = "MaCleSecrete123";
- const EXPIRED_TOKEN = 3 * 24 * 60 * 60
- const CreateToken =  (id) => {
-return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
-}
 
  // tranporter.verify((error,succes)=>{
 //   if(error){
@@ -78,7 +74,12 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
 //     console.log(succes);
 //   }
 // })
-//--------------------------------------------SEND VERIFICATION EMAIL-----------------------------------------------------------
+const EXPIRED_TOKEN = 3 * 24 * 60 * 60
+const CreateToken =  (id) => {
+return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
+}
+
+//--------------------------------------------SEND VERIFICATION MAIL -----------------------------------------------------------
   
   module.exports.verificationMail = (req,res) =>{
         let{userId} = req.params;
@@ -121,7 +122,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
                         //  if(result){
                            User.updateOne({ _id: userId},{verified : true})
                               .then(()=>{
-                                UserVerification.deleteOne({userId})
+                                 UserVerification.deleteOne({UserID:userId})
                                                 .then(()=>{
                                                 //  res.redirect('/verified')
                                                 res.sendFile(path.join(__dirname,"../View/verifyYouMail.html"))
@@ -162,10 +163,10 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
        })
 
   }
+    // ---------------------------------------------  REDIRECT TO PAGE MAIL VERIFIED --------------------------------------------------
+
   module.exports.FileVerification = (req,res)=>{
-
     res.sendFile(path.join(__dirname, "../View/verifyYouMail.html"));
-
   }
   // ---------------------------------------------  SIGN UP ADMIN --------------------------------------------------
   module.exports.signup_Amdin = async (req, res) => {
@@ -204,7 +205,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
        const token = CreateToken(newUser._id)
        console.log(" user  token : "+ token);
        newUser.token = token;
-       //  res.status(201).json(newUser);
+      // res.status(201).json({User:newUser });
 
     }catch(error){
             console.log(error);
@@ -217,13 +218,39 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
     const { email, password ,name} = req.body;
 
     try{
-       const user = await User.create({email,password,name,role:'user'})
-      
-        sendVerificationEmail( user._id,email,res)
-       const token = CreateToken(user._id)
+      //  const user = await User.create({email,password,name,role:'admin',verified:false})
+      //                         .then((result)=>{
+      //                           sendVerificationEmail(result,res)
+      //                         })
+      const newUser = new User({
+        email,
+        password,
+        name,
+        role:"user",
+        verified:false
+      });
+
+       newUser.save()
+              .then((result)=>{
+                console.log(result);
+                sendVerificationEmail({ _id: result._id, email: result.email },res)
+                
+              })
+              .catch((err)=>{
+                console.log(err);
+
+                res.json({
+                  status:"Failed",
+                  message :" An error was occured while saving User"
+                })
+              })
+
+
+
+       const token = CreateToken(newUser._id)
        console.log(" user  token : "+ token);
-       user.token = token;
-       res.status(201).json(user);
+       newUser.token = token;
+      //  res.status(201).json(newUser);
 
     }catch(error){
             console.log(error);
