@@ -3,7 +3,7 @@ const { log, error } = require('console');
 const express = require('express');
 const app = express();
 const morgan = require("morgan")
-app.use(morgan('dev'))
+ app.use(morgan('dev'))
 
 //  ------------------------------------------Require Entity ------------------------------------------
 const User = require('../model/User')
@@ -330,7 +330,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
    }
      
     
-// Fontion SEND mail VERIFICATION
+// Funtion SEND mail VERIFICATION
    const  sendVerificationEmail = ({_id,email},res) => {
     const  CURRENT_URL = "http://localhost:3000/";
     // const  uniqueString = uuidv4()+_id;

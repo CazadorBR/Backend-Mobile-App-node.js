@@ -1,6 +1,5 @@
  const nodemailer = require("nodemailer");
- const { log, error } = require('console');
- const nodemailer = require("nodemailer")
+  const nodemailer = require("nodemailer")
  const bcrypt = require('bcrypt')
  const UserVerification = require('../model/UserVerification')
  // unique string 
@@ -78,7 +77,7 @@ const  UNIQUE_STRING = uuidv4()+_id;
 // var transporter = nodemailer.createTransport({
 //   host: "sandbox.smtp.mailtrap.io",
 //   port: 2525,
-//   auth: {
+//   auth: {ƒ
 //     user: "f1ba4cc13c5aed",
 //     pass: "0246564e53d3c2"
 //   }

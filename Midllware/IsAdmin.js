@@ -12,8 +12,7 @@ const secretKey = process.env.SECRET_KEY;
  //-------------VERIFY ROLE----------------
 
 const verifyRole = (req ,res, next)=>{
- 
-  const header = req.header('Authorization');
+   const header = req.header('Authorization');
   const token = header.split(' ')[1];
    
   try {

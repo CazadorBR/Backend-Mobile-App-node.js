@@ -4,7 +4,7 @@ const User = require('../model/User')
 
 const secretKey = process.env.SECRET_KEY;
 
-//-------------VERIFY CONECTIVTY----------------
+//-------------VERIFY Islogged----------------
 const verifyToken = (req, res, next) => {
 
     const header = req.header('Authorization');

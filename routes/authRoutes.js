@@ -1,27 +1,39 @@
  const { Router } = require('express');
  const authController = require('../controller/authController');
+ const reset_password = require('../controller/Reset_passowrd');
+
  require('dotenv').config(); // Chargez les variables d'environnement
  const router = Router();
 
 
 // ------------Middleware--------------
  const verifyToken  = require('../Midllware/Authmiddleware');  
- const  verifyRole  = require('../Midllware/IsAdmin');  
+ const verifyRole  = require('../Midllware/IsAdmin');  
 
 
- //-----------ARIABLES-------------------
+ //--------------VARIABLES-------------------
  const secretKey = process.env.SECRET_KEY;
  const EXPIRED_TOKEN = 3 * 24 * 60 * 60
 
- //-----------Pricipal Routes------------
+ //--------------Principal Routes------------
   router.post('/signupA', authController.signup_Amdin);
   router.post('/signupU', authController.signup_User);
   router.post('/SignIn', authController.SignIn);
   router.get('/logout', authController.logout);
 
+ //--------------Forget -/- Reset Password Routes------------
+//  router.get('/forgot-passowrd', reset_password.forgot_password_View);
+ router.post('/forgot-password', reset_password.forgot_password);
+ router.get('/reset-password/:id/:token',reset_password.reset_password_View)
+ router.post('/reset-password/:id/:token',reset_password.reset_password);
+
+
+
+//---------------Sending Verification Mail----------------------
   router.get('/verify/:userId',authController.verificationMail)
   router.get('/verified',authController.FileVerification)
-  // --------- Testting Routes-------------
+
+  // ------------Testting Routes-------------
   router.get('/authMid',verifyToken, authController.test);
   router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 
 
