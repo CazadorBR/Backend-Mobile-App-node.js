@@ -36,12 +36,12 @@ module.exports.forgot_password = async (req, res,next) => {
             id:user._id
         }
 
-     const token = jwt.sign(payload,secret,{expiresIn:'15m'})
-     const link =`http://localhost:3000/reset-password/${user._id}/${token}`
-     console.log(link)
-     res.send({ message:'Password reset link was sent check it .now.. !!',
-       Link:link
-        }) 
+        const token = jwt.sign(payload,secret,{expiresIn:'15m'})
+        const link =`http://localhost:3000/reset-password/${user._id}/${token}`
+        console.log(link)
+          res.send({ message:'Password reset link was sent check it .now.. !!',
+          Link:link
+            }) 
            
     }
         
@@ -80,25 +80,32 @@ module.exports.forgot_password = async (req, res,next) => {
 
 } 
     module.exports.reset_password  = async (req, res,next) => {
-      const{id,token}=req.params
-      const{password} =req.body
+      const{id,token} = req.params
+      const{password} = req.body
 
-    if (!(password )) {
+    if (!(password)) {
         res.status(400).send("this input is required");
       }
-    const user = await User.findById(id);
-    // res.send(user)
-    const secret = JWT_secret + user.password;
-    try {
-        const payload = jwt.verify(token ,secret)
-        user.password = password
+      else{
+         
 
-        res.send({message:" password has been succefully changed ",
-          User:user
-      })
-    } catch (error) {
-        console.log(error.message);
-            res.send(error.message)
+          try {
+                const user = await User.findById(id);
+                console.log(" Pwd before reset  :"+user.password);
+                const secret = JWT_secret + user.password;
+                const payload = jwt.verify(token ,secret)
+                
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+               await user.updateOne({password : hashedPassword})
+                    .then(
+                          res.status(200).send({message:"Password has been succefully reseted",
+                          User:user}))
+                    .catch(res.status(400).send({message:"User undefined"}) )
+          } catch (error) {
+                console.log(error.message);
+                    res.send(error.message)
+            }
     }
 
     }

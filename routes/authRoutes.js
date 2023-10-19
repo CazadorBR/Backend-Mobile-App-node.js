@@ -23,7 +23,7 @@
 
  //--------------Forget -/- Reset Password Routes------------
 //  router.get('/forgot-passowrd', reset_password.forgot_password_View);
- router.post('/forgot-password', reset_password.forgot_password);
+ router.post('/forgot-password',  reset_password.forgot_password);
  router.get('/reset-password/:id/:token',reset_password.reset_password_View)
  router.post('/reset-password/:id/:token',reset_password.reset_password);
 
