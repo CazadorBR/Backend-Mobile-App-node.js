@@ -48,6 +48,12 @@ userSchema.pre('save', async function(next){
      console.log("new user  about  to be created and saved ",this);
     next();
 })
+userSchema.pre('updateOne', async function(next){
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password ,salt)
+   console.log("new user  about  to be created and saved ",this);
+  next();
+})
 
 // userSchema.methods.generateAuthToken = function () {
 //     const token = jwt.sign({ _id: this._id },secretKey,{expiresIn: EXPIRED_TOKEN});

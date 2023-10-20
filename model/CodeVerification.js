@@ -4,7 +4,11 @@ const mongoose = require('mongoose');
 
 const CodeSchema = new mongoose.Schema(
     {
-        UserID : String,
+        UserID :{
+         type:   String,
+         unique: true,
+
+        },
         code : Number
       },
     );

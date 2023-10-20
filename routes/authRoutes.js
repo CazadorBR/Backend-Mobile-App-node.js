@@ -25,6 +25,7 @@
 //  router.get('/forgot-passowrd', reset_password.forgot_password_View);
  router.post('/forgot-password',  reset_password.forgot_password);
  router.get('/reset-password/:id/:token',reset_password.reset_password_View)
+ 
  router.post('/reset-password/:id/:token',reset_password.reset_password);
  router.post('/reset-password/:Userid',reset_password.reset_user_password);
 
