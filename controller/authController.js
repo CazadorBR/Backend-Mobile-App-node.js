@@ -122,6 +122,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
                         //  if(result){
                            User.updateOne({ _id: userId},{verified : true})
                               .then(()=>{
+                                console.log(User);
                                  UserVerification.deleteOne({UserID:userId})
                                                 .then(()=>{
                                                 //  res.redirect('/verified')
@@ -181,9 +182,11 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
         email,
         password,
         name,
+        image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
         role:"admin",
         verified:false
       });
+      console.log("filename"+req.file.filename);
 
        newUser.save()
               .then((result)=>{
@@ -193,7 +196,6 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
               })
               .catch((err)=>{
                 console.log(err);
-
                 res.json({
                   status:"Failed",
                   message :" An error was occured while saving User"
@@ -226,6 +228,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
         email,
         password,
         name,
+        image: `${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
         role:"user",
         verified:false
       });

@@ -6,9 +6,20 @@
  const router = Router();
 
 
-// ------------Middleware--------------
+// -------------------------- --- Middleware ----------------------------
  const verifyToken  = require('../Midllware/Authmiddleware');  
  const verifyRole  = require('../Midllware/IsAdmin');  
+// ---------------------------- Configuration MULTER -----------------------------
+const multer = require('../Midllware/multer-config');
+const upload = require('../Midllware/multer-config');
+
+// Utilisation de multerConfig.getAll, multerConfig.addOnce, etc. pour accéder aux fonctions exportées
+const getAll = multer.getAll;
+const addOnce = multer.addOnce;
+const getOnce = multer.getOnce;
+const putAll = multer.putAll;
+const patchOnce = multer.patchOnce;
+const deleteOnce = multer.deleteOnce;
 
 
  //--------------VARIABLES-------------------
@@ -16,8 +27,8 @@
  const EXPIRED_TOKEN = 3 * 24 * 60 * 60
 
  //--------------Principal Routes------------
-  router.post('/signupA', authController.signup_Amdin);
-  router.post('/signupU', authController.signup_User);
+  router.post('/signupA',upload, authController.signup_Amdin);
+  router.post('/signupU',upload, authController.signup_User);
   router.post('/SignIn', authController.SignIn);
   router.get('/logout', authController.logout);
 
@@ -30,16 +41,20 @@
  router.post('/reset-password/:Userid',reset_password.reset_user_password);
 
 
+ 
 
 //---------------Sending Verification Mail----------------------
   router.get('/verify/:userId',authController.verificationMail)
   router.get('/verified',authController.FileVerification)
+
+  
 
   // ------------Testting Routes-------------
   router.get('/authMid',verifyToken, authController.test);
   router.get('/IsAdmin' ,verifyRole, authController.verifyRole); 
 
  // router.get('/test', verifyToken,authController.test);  
+  
 
 
  
