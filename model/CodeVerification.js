@@ -7,7 +7,6 @@ const CodeSchema = new mongoose.Schema(
         UserID :{
          type:   String,
          unique: true,
-
         },
         code : Number
       },

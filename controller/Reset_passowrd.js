@@ -11,17 +11,16 @@ const e = require('express');
  
 // const JWT_secret = process.env.SECRET_KEY;
 const email_S = process.env.AUTH_EMAIL;
-
 const JWT_secret = 'some super secret.....'
 
 
     // ----------A  ne pas modfidier!!!!!!!!--------------------
-    var transporter = nodemailer.createTransport({
+    var transporter= nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "8e9e3214c3b260",
-        pass: "ec44a3f6161e2a"
+        user: "08fe374607a4f2",
+        pass: "3d63cd83b30b68"
       }
     });
     // ------------Test SENING MAIL------------------------------------------------

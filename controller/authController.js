@@ -35,12 +35,12 @@ const secretKey = process.env.SECRET_KEY;
 //   }
 // });
 
-var transporter = nodemailer.createTransport({
+var transporter= nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
-    user: "8e9e3214c3b260",
-    pass: "ec44a3f6161e2a"
+    user: "08fe374607a4f2",
+    pass: "3d63cd83b30b68"
   }
 });
 // ------------Test SENING MAIL------------------------------------------------
@@ -49,7 +49,7 @@ const mailOptions = {
   from: email_S,
   to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
   subject: 'Sending Email using Node.js',
-  text: 'sahbi haffa!',
+  text: 'Hello That was easy!',
 }
 
 // TEST  MAILLING
@@ -61,13 +61,13 @@ const mailOptions = {
     console.log(succes);
   }
 })
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
 //  /    --------------- JWT ------CONFIGURATION---------------
   console.log(secretKey);
   const secrect_key = "MaCleSecrete123";
@@ -213,8 +213,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
        const token = CreateToken(newUser._id)
        console.log(" user  token : "+ token);
        newUser.token = token;
-      // res.status(201).json({User:newUser });
-
+ 
     }catch(error){
             console.log(error);
             res.status(400).send("Bad request so Admin not created")
@@ -287,7 +286,7 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
         // PAYLOAD:je place dans le payload du jwt  id_user + Email + Role
         const token = jwt.sign( { user_id: user._id,role: user.role, email },secretKey,{expiresIn: EXPIRED_TOKEN,} );
          user.token = token;
-        res.status(200).json(user);
+        res.status(200).json({User:user,Token:token});
       }
     }
         
@@ -296,28 +295,21 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
         console.log(err);
       }  
  }
-     //------------VERIFY USER LOGIN----------------
-    //  module.exports.Verify = async (req, res) => {
-    //     res.status(200).json("Successfully Logged");
-    //  } 
+      
          //-------------------------------------------Logout----------------------------------------------------------------------
 
     module.exports.logout = async (req,res)=>{
       
         const header = req.header('Authorization');
-
-        // console.log(header)
         if (!header) 
         return res.sendStatus(204);  
-        
+      
         else  {
         const accessToken = header.split(' ')[1];  
-        // console.log(accessToken)
-        const checkIfBlacklisted = await BlackList.findOne({ token: accessToken }); // Check if that token is blacklisted
+         const checkIfBlacklisted = await BlackList.findOne({ token: accessToken }); // Check if that token is blacklisted
         if (checkIfBlacklisted)return res.sendStatus(204);
           else{
-         // otherwise blacklist token
-        const newBlacklist = new BlackList({  token: accessToken });
+         const newBlacklist = new BlackList({  token: accessToken });
         
         await newBlacklist.save();
        res.status(200).json({ message: 'You are logged out!' });
@@ -325,9 +317,41 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
       }
     
     }
-     
-     
-    
+ //-------------------------------------------EDIT PROFILE----------------------------------------------------------------------
+
+   module.exports.EditProfile = async(req,res) =>{
+    try {
+    const {email,password,name} = req.body
+    const header = req.header('Authorization');
+    if (!header) 
+       return res.sendStatus(403);  
+  
+    else  {
+       const accessToken = header.split(' ')[1];  
+       const decoded = jwt.verify(accessToken,secretKey);
+      
+       const Email = decoded.email
+      console.log(Email);
+      const user = await User.findOne({ email: Email }); 
+      if(user){
+        user.email = email
+        user.password = password
+        user.name = name
+        await user.save()
+        res.status(200).json("User has been succefully updated")
+
+  }else{
+    res.status(404).json("User not found")
+  }
+
+  }
+} catch (error) {
+  // Gestion des erreurs et renvoi d'une réponse appropriée
+  console.error(error);
+  return res.status(500).json({ error: 'Erreur serveur' });
+}
+}
+
          //-------------------------------------------TEST----------------------------------------------------------------------
 
   module.exports.test = async (req,res) =>{

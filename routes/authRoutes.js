@@ -31,6 +31,8 @@ const deleteOnce = multer.deleteOnce;
   router.post('/signupU',upload, authController.signup_User);
   router.post('/SignIn', authController.SignIn);
   router.get('/logout', authController.logout);
+  router.post('/EditProfile',verifyToken, authController.EditProfile);
+
 
  //--------------Forget -/- Reset Password Routes------------
 //  router.get('/forgot-passowrd', reset_password.forgot_password_View);
