@@ -20,30 +20,36 @@ const nodemailer = require("nodemailer")
 const {v4:uuidv4} = require("uuid");
  
 
-const email = process.env.AUTH_EMAIL;
-const pwd = process.env.AUTH_PASSWORD;
-const key = '2c3df0c0565cc8ba2dc3ed40d69ab40b-77316142-f1d419cc'
 const email_S = process.env.AUTH_EMAIL;
 const secretKey = process.env.SECRET_KEY;
-
+ 
 
 // --------------------------------------- USER VERIFICATION CODE -------------------------------------------------------------
 // ----------A  ne pas modfidier!!!!!!!!--------------------
+// var transporter = nodemailer.createTransport({
+//   host: "sandbox.smtp.mailtrap.io",
+//   port: 2525,
+//   auth: {
+//     user: "f1ba4cc13c5aed",
+//     pass: "0246564e53d3c2"
+//   }
+// });
+
 var transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
-    user: "f1ba4cc13c5aed",
-    pass: "0246564e53d3c2"
+    user: "8e9e3214c3b260",
+    pass: "ec44a3f6161e2a"
   }
 });
-// ------------------------------------------------------------
+// ------------Test SENING MAIL------------------------------------------------
 // Email options
 const mailOptions = {
-  from: email,
+  from: email_S,
   to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
   subject: 'Sending Email using Node.js',
-  text: 'That was easy!',
+  text: 'sahbi haffa!',
 }
 
 // TEST  MAILLING
@@ -51,22 +57,22 @@ const mailOptions = {
   if(error){
     console.log(error);
   }else {
-    console.log("Ready to send Mails");
+    console.log("Hello ,Ready to send Mails ");
     console.log(succes);
   }
 })
-// transporter.sendMail(mailOptions, function (error, info) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
- ///    --------------- JWT ------CONFIGURATION---------------
-//   console.log(secretKey);
-  // const secrect_key = "MaCleSecrete123";
+transporter.sendMail(mailOptions, function (error, info) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
+//  /    --------------- JWT ------CONFIGURATION---------------
+  console.log(secretKey);
+  const secrect_key = "MaCleSecrete123";
 
- // tranporter.verify((error,succes)=>{
+//   transporter.verify((error,succes)=>{
 //   if(error){
 //   console.log("erreur de connection "+error);
 //   }else{
@@ -334,71 +340,78 @@ return jwt.sign({id},secretKey,{expiresIn: EXPIRED_TOKEN})
      
     
 // Funtion SEND mail VERIFICATION
-   const  sendVerificationEmail = ({_id,email},res) => {
-    const  CURRENT_URL = "http://localhost:3000/";
-    // const  uniqueString = uuidv4()+_id;
-      
-     // mail options
-        const  Mail_Option = {
-        from: email_S,
-        to: email, // Replace with recipient's email address
-        subject: 'Verify your email',
-        html: `<p> Please Verify your  <b>Email adress</b> to complete the sign up into your account.</p>
-               <p> this link  <b> expires in 6 hours</b>.</p>
-               <div style="font-family: inherit; text-align: center"><span style="color: #ffbe00; font-size: 18px">
-               <p> Press <a href=${CURRENT_URL+"verify/"+_id}>HERE</a>
-               </span></div><div></div></div></td>
+const  sendVerificationEmail = ({_id,email},res) => {
+  const  CURRENT_URL = "http://localhost:3000/";
+     
+   // mail options
+      const  Mail_Option = {
+      from: email_S,
+      to: email, // Replace with recipient's email address
+      subject: 'Verify your email',
+      html: `<p> Please Verify your  <b>Email adress</b> to complete the sign up into your account.</p>
+             <p> this link  <b> expires in 6 hours</b>.</p>
+             <div style="font-family: inherit; text-align: center"><span style="color: #ffbe00; font-size: 18px">
+             <p> Press <a href=${CURRENT_URL+"verify/"+_id}>HERE</a>
+             </span></div><div></div></div></td>
 
-                   To proceed.</p>`,
-        };
-    
-         /// to Do ----------------------
-    
-        //  hach the unique string 
-        // const saltRounds = 10
-        // bcrypt.hash(uniqueString,saltRounds)
-        //       .then((hashedUniqueString) => {
-       
-                // creat a instance for userverification CLASS to add attribute
-                    const newverification = UserVerification({
-                      UserID : _id,
-                      // uniqueString: hashedUniqueString, 
-                      createdAt :Date.now(),
-                      expiredAt :Date.now()+21600000  //6 hours     
-                    })
-               // Save uservarification data 
-                    newverification.save()
-                                   .then(()=>{
-                                          transporter
-                                              .sendMail(Mail_Option)
-                                              .then(()=>{
-                                                res.json({
-                                                  status : "Pending",
-                                                  message :"Email verification was sent ! Check it !!"
-                                                })
+                 To proceed.</p>`,
+      };
+  
+       /// to Do ----------------------
+  
+      //  hach the unique string 
+      // const saltRounds = 10
+      // bcrypt.hash(uniqueString,saltRounds)
+      //       .then((hashedUniqueString) => {
+     
+              // creat a instance for userverification CLASS to add attribute
+                  const newverification = UserVerification({
+                    UserID : _id,
+                    // uniqueString: hashedUniqueString, 
+                    createdAt :Date.now(),
+                    expiredAt :Date.now()+21600000  //6 hours     
+                  })
+             // Save uservarification data 
+                  newverification.save()
+                                 .then(()=>{
+                                 try{
+                                        transporter
+                                            .sendMail(Mail_Option)
+                                            .then(()=>{
+                                              res.json({
+                                                status : "Pending",
+                                                message :"Email verification was sent ! Check it !!"
                                               })
-                                              .catch((error) =>{
-                                                console.log(error);
-                                                res.json({
-                                                  status: "Failed",
-                                                  message: "Couldn't send mail  verification !!"
-                                                })
-                                    // send email with nodemailer tranporter 
-                                   })
-                                   .catch((error) =>{
-                                    console.log(error);
-                                    res.json({
-                                      status: "Failed",
-                                      message: "Couldn't save  verification Email Data!"
-                                    })
-                                   }) 
-             })
-              // .catch((error) =>{
-              //   console.log(error);
-              //   res.json({
-              //     status: "Failed",
-              //     message: "An error was occured while hashing email data !"
-              //   })
-              //  }) 
-    // } )
-    }
+                                              
+                                            })
+                                            .catch((error) =>{
+                                              console.log(error);
+                                              res.json({
+                                                status: "Failed",
+                                                message: "Couldn't send mail  verification !!"
+                                              })
+                                  // send email with nodemailer tranporter 
+                                 })
+                                 .catch((error) =>{
+                                  console.log(error);
+                                  res.json({
+                                    status: "Failed",
+                                    message: "Couldn't save  verification Email Data!"
+                                  })
+                                 }) 
+           }
+           catch(erro){
+            console.error('Erreur lors de l\'envoi de l\'email :', error.message);
+
+           }
+                                })
+            // .catch((error) =>{
+            //   console.log(error);
+            //   res.json({
+            //     status: "Failed",
+            //     message: "An error was occured while hashing email data !"
+            //   })
+            //  }) 
+  // } )
+  }
+ 

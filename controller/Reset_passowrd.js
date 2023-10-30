@@ -5,7 +5,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 const path = require('path')
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
+const e = require('express');
 
  
 // const JWT_secret = process.env.SECRET_KEY;
@@ -15,22 +16,22 @@ const JWT_secret = 'some super secret.....'
 
 
     // ----------A  ne pas modfidier!!!!!!!!--------------------
-var transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: "f1ba4cc13c5aed",
-    pass: "0246564e53d3c2"
-  }
-});
-transporter.verify((error,succes)=>{
-  if(error){
-    console.log(error);
-  }else {
-    console.log("Ready to send verification code");
-    console.log(succes);
-  }
-})
+    var transporter = nodemailer.createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: "8e9e3214c3b260",
+        pass: "ec44a3f6161e2a"
+      }
+    });
+    // ------------Test SENING MAIL------------------------------------------------
+    // Email options
+    const mailOptions = {
+      from: email_S,
+      to: 'fedi.benromdhane@esprit.tn', // Replace with recipient's email address
+      subject: 'Sending Email using Node.js',
+      text: 'sahbi haffa!',
+    }
 module.exports.forgot_password = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -120,6 +121,8 @@ module.exports.reset_password = async (req, res, next) => {
       await user.save();
 
       await storedCode.delete();
+
+
 
       res.status(200).send({ message: "Password has been successfully reset", User: user });
     } else {
